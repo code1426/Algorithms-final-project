@@ -1,0 +1,29 @@
+# Window settings
+WINDOW_WIDTH = 1200
+WINDOW_HEIGHT = 800
+CELL_SIZE = 12  # Slightly larger for better visibility
+GRID_ROWS = WINDOW_HEIGHT // CELL_SIZE
+GRID_COLS = (WINDOW_WIDTH - 250) // CELL_SIZE  # Wider button panel
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+PURPLE = (128, 0, 128)
+GRAY = (128, 128, 128)
+DARK_GRAY = (64, 64, 64)
+LIGHT_GRAY = (200, 200, 200)
+CYAN = (0, 255, 255)
+
+# Button dimensions
+BUTTON_WIDTH = 180
+BUTTON_HEIGHT = 45
+BUTTON_MARGIN = 15
+
+# Animation speeds
+FAST_SPEED = 0.001
+NORMAL_SPEED = 0.01
+SLOW_SPEED = 0.05
