@@ -5,7 +5,7 @@ by updating node colors and supports pausing and stopping the algorithm
 gracefully via callback functions, allowing for interactive control from the main application.
 """
 
-from typing import Optional, Callable
+from typing import Optional, Callable, List
 import heapq # Python's built-in min-heap implementation, used for the priority queue.
 import time   # For introducing artificial delays to control visualization speed.
 from grid import Grid
@@ -233,14 +233,14 @@ class Pathfinder:
 
         path_length = 0
         current = end
-        path_nodes = [] # List to store nodes that form the path (excluding the start node).
+        path_nodes: List[Node] = [] # List to store nodes that form the path (excluding the start node).
 
         # Traverse backward from the `end` node using the `previous` pointers
         # until the `start` node (which has `previous` as `None`) is reached.
         while current.previous:
             current = current.previous
             # Ensure the start node itself is not marked as part of the 'path' path.
-            if current.color != RED:
+            if current.color != NODE_START:
                 path_nodes.append(current)
                 path_length += 1 # Increment path length for each node added.
 

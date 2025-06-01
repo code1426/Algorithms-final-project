@@ -93,9 +93,6 @@ class Grid:
                 # Draw the main colored rectangle representing the node's state.
                 pygame.draw.rect(window, node.color,
                                (node.x, node.y, CELL_SIZE, CELL_SIZE))
-                # Draw a 1-pixel thick border around each cell for grid lines.
-                pygame.draw.rect(window, LIGHT_GRAY,
-                               (node.x, node.y, CELL_SIZE, CELL_SIZE), 1)
 
     def clear_path(self) -> None:
         """

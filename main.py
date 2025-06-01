@@ -113,13 +113,13 @@ class PathfindingVisualizer:
         """
         # Define the rectangular area for the UI panel.
         ui_panel = pygame.Rect(GRID_COLS * CELL_SIZE, 0,
-                              WINDOW_WIDTH - GRID_COLS * CELL_SIZE, WINDOW_HEIGHT)
-        pygame.draw.rect(self.window, (200, 200, 200), ui_panel) # Draw a light gray background for the panel.
+                               WINDOW_WIDTH - GRID_COLS * CELL_SIZE, WINDOW_HEIGHT)
+        pygame.draw.rect(self.window, BG_LIGHT, ui_panel) # Draw the UI panel background
 
         y_offset = 20 # Initial vertical offset for placing UI elements.
 
         # --- Application Title ---
-        title = self.title_font.render("Dijkstra's Algorithm", True, BLACK)
+        title = self.title_font.render("Dijkstra's Algorithm", True, TEXT_PRIMARY)
         self.window.blit(title, (GRID_COLS * CELL_SIZE + 20, y_offset))
         y_offset += 40 # Move down for next element.
 
@@ -139,7 +139,7 @@ class PathfindingVisualizer:
         ]
 
         for instruction_text in instructions:
-            text_surface = self.font.render(instruction_text, True, BLACK)
+            text_surface = self.font.render(instruction_text, True, TEXT_SECONDARY)
             self.window.blit(text_surface, (GRID_COLS * CELL_SIZE + 20, y_offset))
             y_offset += 20 # Move down for the next line of instruction.
 
@@ -151,12 +151,12 @@ class PathfindingVisualizer:
 
         # --- "Generate Walls" Button ---
         wall_enabled = self.can_interact_with_grid() # Button is enabled if grid interaction is allowed.
-        wall_color = GRAY if wall_enabled else DARK_GRAY # Color changes based on enabled state.
+        wall_color = BUTTON_NORMAL if wall_enabled else BUTTON_DISABLED # Color changes based on enabled state.
         wall_button_rect = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
         self.button_positions['generate_wall'] = (wall_button_rect, wall_enabled) # Store rect and state.
         pygame.draw.rect(self.window, wall_color, wall_button_rect) # Draw button background.
-        pygame.draw.rect(self.window, BLACK, wall_button_rect, 2) # Draw button border.
-        wall_text = self.font.render("Generate Walls", True, WHITE if wall_enabled else LIGHT_GRAY)
+        pygame.draw.rect(self.window, ACCENT if wall_enabled else BG_DARK, wall_button_rect, 2) # Draw button border.
+        wall_text = self.font.render("Generate Walls", True, TEXT_PRIMARY if wall_enabled else TEXT_SECONDARY)
         text_rect = wall_text.get_rect(center=wall_button_rect.center) # Center text on button.
         self.window.blit(wall_text, text_rect)
         y_offset += BUTTON_HEIGHT + BUTTON_MARGIN # Update offset for next button.
@@ -166,20 +166,19 @@ class PathfindingVisualizer:
         wall_type_keys = ['maze', 'random']
         self.button_positions['wall_types'] = []
         for i, wtype_name in enumerate(wall_types):
-            type_enabled = self.can_interact_with_grid()
             # Highlight the currently selected wall type.
-            if type_enabled and self.wall_type == wall_type_keys[i]:
-                color = BLUE
-            elif type_enabled:
-                color = GRAY
+            if wall_enabled and self.wall_type == wall_type_keys[i]:
+                color = BUTTON_ACTIVE
+            elif wall_enabled:
+                color = BUTTON_NORMAL
             else:
-                color = DARK_GRAY
+                color = BUTTON_DISABLED
 
             type_button_rect = pygame.Rect(button_x + i * 55, y_offset, 50, 30) # Small buttons.
-            self.button_positions['wall_types'].append((type_button_rect, wall_type_keys[i], type_enabled))
+            self.button_positions['wall_types'].append((type_button_rect, wall_type_keys[i], wall_enabled))
             pygame.draw.rect(self.window, color, type_button_rect)
-            pygame.draw.rect(self.window, BLACK, type_button_rect, 1)
-            text_color = WHITE if type_enabled else LIGHT_GRAY
+            pygame.draw.rect(self.window, BG_DARK, type_button_rect, 1)
+            text_color = TEXT_PRIMARY if wall_enabled else TEXT_SECONDARY
             type_text = pygame.font.SysFont('arial', 12).render(wtype_name, True, text_color)
             text_rect = type_text.get_rect(center=type_button_rect.center)
             self.window.blit(type_text, text_rect)
@@ -187,38 +186,38 @@ class PathfindingVisualizer:
 
         # --- "Find Path" / "Pause" / "Resume" Button ---
         path_text_str = "" # Text displayed on the button.
-        path_color = DARK_GRAY # Default disabled color.
+        path_color = BUTTON_DISABLED # Default disabled color.
         path_enabled = False
 
         if self.is_pathfinding_in_progress():
             if self.pathfinding_paused:
-                path_color = ORANGE # Orange when paused.
+                path_color = STATUS_WARNING # Warning color when paused.
                 path_text_str = "Resume Path Finding"
             else:
-                path_color = RED # Red when actively finding path.
+                path_color = STATUS_ERROR # Error color when actively finding path.
                 path_text_str = "Pause Path Finding"
             path_enabled = True # Always enabled when pathfinding is active.
         elif self.can_start_pathfinding():
-            path_color = GREEN # Green when ready to start.
+            path_color = STATUS_SUCCESS # Success color when ready to start.
             path_text_str = "Find Shortest Path"
             path_enabled = True
         else:
-            path_color = DARK_GRAY # Disabled state.
+            path_color = BUTTON_DISABLED # Disabled state.
             path_text_str = "Find Shortest Path"
             path_enabled = False
 
         path_button_rect = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
         self.button_positions['find_path'] = (path_button_rect, path_enabled)
         pygame.draw.rect(self.window, path_color, path_button_rect)
-        pygame.draw.rect(self.window, BLACK, path_button_rect, 2)
-        text_color = WHITE if path_enabled else LIGHT_GRAY
+        pygame.draw.rect(self.window, ACCENT if path_enabled else BG_DARK, path_button_rect, 2)
+        text_color = TEXT_PRIMARY if path_enabled else TEXT_SECONDARY
         path_text = self.font.render(path_text_str, True, text_color)
         text_rect = path_text.get_rect(center=path_button_rect.center)
         self.window.blit(path_text, text_rect)
         y_offset += BUTTON_HEIGHT + BUTTON_MARGIN
 
         # --- Speed Control Buttons ---
-        speed_text_surface = self.font.render("Animation Speed:", True, BLACK)
+        speed_text_surface = self.font.render("Animation Speed:", True, TEXT_PRIMARY)
         self.window.blit(speed_text_surface, (button_x, y_offset))
         y_offset += 25
 
@@ -228,17 +227,17 @@ class PathfindingVisualizer:
         for i, (name, spd) in enumerate(speeds):
             # Highlight currently selected speed button.
             if speed_enabled and abs(self.speed - spd) < 0.001: # Use small delta for float comparison.
-                color = BLUE
+                color = BUTTON_ACTIVE
             elif speed_enabled:
-                color = GRAY
+                color = BUTTON_NORMAL
             else:
-                color = DARK_GRAY
+                color = BUTTON_DISABLED
 
             speed_button_rect = pygame.Rect(button_x + i * 55, y_offset, 50, 30)
             self.button_positions['speeds'].append((speed_button_rect, spd, speed_enabled))
             pygame.draw.rect(self.window, color, speed_button_rect)
-            pygame.draw.rect(self.window, BLACK, speed_button_rect, 1)
-            text_color = WHITE if speed_enabled else LIGHT_GRAY
+            pygame.draw.rect(self.window, BG_DARK, speed_button_rect, 1)
+            text_color = TEXT_PRIMARY if speed_enabled else TEXT_SECONDARY
             speed_label = pygame.font.SysFont('arial', 12).render(name, True, text_color)
             text_rect = speed_label.get_rect(center=speed_button_rect.center)
             self.window.blit(speed_label, text_rect)
@@ -248,24 +247,24 @@ class PathfindingVisualizer:
         clear_enabled = self.can_interact_with_grid() # Clear buttons are enabled if grid interaction is allowed.
 
         # "Clear Path" Button
-        clear_path_color = YELLOW if clear_enabled else DARK_GRAY
+        clear_path_color = STATUS_WARNING if clear_enabled else BUTTON_DISABLED
         clear_path_button_rect = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
         self.button_positions['clear_path'] = (clear_path_button_rect, clear_enabled)
         pygame.draw.rect(self.window, clear_path_color, clear_path_button_rect)
-        pygame.draw.rect(self.window, BLACK, clear_path_button_rect, 2)
-        text_color = BLACK if clear_enabled else LIGHT_GRAY # Black text on yellow button for contrast.
+        pygame.draw.rect(self.window, ACCENT if clear_enabled else BG_DARK, clear_path_button_rect, 2)
+        text_color = BG_LIGHT if clear_enabled else TEXT_SECONDARY # Light text on warning button for contrast.
         clear_path_text = self.font.render("Clear Path", True, text_color)
         text_rect = clear_path_text.get_rect(center=clear_path_button_rect.center)
         self.window.blit(clear_path_text, text_rect)
         y_offset += BUTTON_HEIGHT + BUTTON_MARGIN
 
         # "Clear All" Button
-        clear_all_color = RED if clear_enabled else DARK_GRAY
+        clear_all_color = STATUS_ERROR if clear_enabled else BUTTON_DISABLED
         clear_all_button_rect = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
         self.button_positions['clear_all'] = (clear_all_button_rect, clear_enabled)
         pygame.draw.rect(self.window, clear_all_color, clear_all_button_rect)
-        pygame.draw.rect(self.window, BLACK, clear_all_button_rect, 2)
-        text_color = WHITE if clear_enabled else LIGHT_GRAY
+        pygame.draw.rect(self.window, ACCENT if clear_enabled else BG_DARK, clear_all_button_rect, 2)
+        text_color = TEXT_PRIMARY if clear_enabled else TEXT_SECONDARY
         clear_all_text = self.font.render("Clear All", True, text_color)
         text_rect = clear_all_text.get_rect(center=clear_all_button_rect.center)
         self.window.blit(clear_all_text, text_rect)
@@ -273,7 +272,7 @@ class PathfindingVisualizer:
 
         # --- Status and Path Length Display ---
         if self.last_path_length > 0:
-            path_info = self.font.render(f"Path Length: {self.last_path_length}", True, BLACK)
+            path_info = self.font.render(f"Path Length: {self.last_path_length}", True, TEXT_PRIMARY)
             self.window.blit(path_info, (button_x, y_offset))
             y_offset += 25
 
@@ -286,11 +285,11 @@ class PathfindingVisualizer:
             "PAUSED": "Path finding PAUSED" # Explicitly handled, though covered by PATHFINDING.
         }
 
-        status_color = BLACK # Default status text color.
+        status_color = TEXT_PRIMARY # Default status text color.
         if self.is_pathfinding_in_progress():
-            status_color = ORANGE if self.pathfinding_paused else BLUE
+            status_color = STATUS_WARNING if self.pathfinding_paused else STATUS_SUCCESS
         elif self.state == "READY":
-            status_color = GREEN
+            status_color = STATUS_SUCCESS
 
         status_text_surface = self.font.render(state_messages.get(self.state, ""), True, status_color)
         self.window.blit(status_text_surface, (button_x, y_offset))
@@ -659,7 +658,7 @@ class PathfindingVisualizer:
                 # --- Drawing Phase ---
                 # All drawing operations must occur in the main thread.
                 try:
-                    self.window.fill(WHITE) # Fill the entire window with white to clear previous frame.
+                    self.window.fill(BG_DARK) # Clear the screen with dark background.
                     self.grid.draw(self.window) # Draw the grid (nodes and their current colors).
                     self.draw_ui() # Draw the user interface elements.
                     pygame.display.flip() # Update the entire screen to show the newly drawn elements.

@@ -42,7 +42,7 @@ class Node:
         self.col: int = col
         self.x: int = col * CELL_SIZE # Calculate pixel x-coordinate.
         self.y: int = row * CELL_SIZE # Calculate pixel y-coordinate.
-        self.color: Tuple[int, int, int] = WHITE # Default color is white (unvisited).
+        self.color: Tuple[int, int, int] = NODE_DEFAULT # Default node color
         self.neighbors: List['Node'] = [] # Empty list initially, populated by `Grid`.
         self.is_wall: bool = False # Initially, not a wall.
 
@@ -70,35 +70,35 @@ class Node:
         Sets the node's state to an impassable wall and updates its color to `BLACK`.
         """
         self.is_wall = True
-        self.color = BLACK
+        self.color = WALL
 
     def make_path(self) -> None:
         """
         Changes the node's color to `YELLOW` to visually indicate that it is part
         of the final shortest path found by the algorithm.
         """
-        self.color = YELLOW
+        self.color = NODE_PATH
 
     def make_start(self) -> None:
         """
         Sets the node's color to `RED` to visually designate it as the starting node
         for the pathfinding algorithm.
         """
-        self.color = RED
+        self.color = NODE_START
 
     def make_end(self) -> None:
         """
         Sets the node's color to `GREEN` to visually designate it as the ending (target) node
         for the pathfinding algorithm.
         """
-        self.color = GREEN
+        self.color = NODE_END
 
     def make_visited(self) -> None:
         """
         Changes the node's color to `BLUE` to visually indicate that it has been
         processed (visited) by Dijkstra's algorithm during the search phase.
         """
-        self.color = BLUE
+        self.color = NODE_VISITED
 
     def make_unvisited_neighbor(self) -> None:
         """
@@ -106,7 +106,7 @@ class Node:
         neighbor currently being considered or placed into the priority queue by
         Dijkstra's algorithm.
         """
-        self.color = CYAN
+        self.color = NODE_NEIGHBOR
 
     def reset(self) -> None:
         """
@@ -115,7 +115,7 @@ class Node:
         algorithm-related attributes (`distance`, `previous`, `visited`) to their initial values.
         This method is used for clearing the grid or preparing for a new pathfinding run.
         """
-        self.color = WHITE
+        self.color = NODE_DEFAULT
         self.is_wall = False
         self.distance = float('inf') # Reset distance to infinity.
         self.previous = None         # Clear previous node reference.
