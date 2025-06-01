@@ -1,3 +1,10 @@
+"""
+This file defines global constants used throughout the pathfinding visualizer application.
+It centralizes configuration settings like window dimensions, grid cell size,
+color palette, button sizes, and animation speeds, making them easy to
+manage and adjust.
+"""
+
 # Window settings
 WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 800
@@ -18,7 +25,6 @@ DARK_GRAY = (64, 64, 64)
 LIGHT_GRAY = (211, 211, 211)
 CYAN = (0, 191, 255)  # Deep sky blue for neighbors
 ORANGE = (255, 140, 0)  # Dark orange for special effects
-PINK = (255, 20, 147)  # Deep pink for highlights
 
 # Button dimensions
 BUTTON_WIDTH = 200
