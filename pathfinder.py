@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Callable
 import heapq
 import pygame
 import time
@@ -11,11 +11,28 @@ class Pathfinder:
     def dijkstra(grid: Grid, start: Optional[Node], end: Optional[Node], 
                 window: Optional[pygame.Surface] = None, speed: float = NORMAL_SPEED) -> bool:
         """
-        Dijkstra's shortest path algorithm with visualization
+        Original Dijkstra's shortest path algorithm with visualization
+        Returns True if path is found, False otherwise
+        """
+        return Pathfinder.dijkstra_with_pause(grid, start, end, window, speed)
+
+    @staticmethod
+    def dijkstra_with_pause(grid: Grid, start: Optional[Node], end: Optional[Node], 
+                           window: Optional[pygame.Surface] = None, speed: float = NORMAL_SPEED,
+                           should_pause: Optional[Callable[[], bool]] = None,
+                           should_stop: Optional[Callable[[], bool]] = None) -> bool:
+        """
+        Dijkstra's shortest path algorithm with visualization and pause support
         Returns True if path is found, False otherwise
         """
         if not start or not end:
             return False
+
+        # Default pause and stop functions
+        if should_pause is None:
+            should_pause = lambda: False
+        if should_stop is None:
+            should_stop = lambda: False
 
         # Reset all pathfinding attributes
         for row in grid.grid:
@@ -35,10 +52,22 @@ class Pathfinder:
         unvisited_set = {start}
 
         nodes_processed = 0
-        # Adjust visualization frequency based on speed
-        update_frequency = max(1, int(1 / (speed * 100))) if speed > 0 else 1
+        # Adjust sleep frequency based on speed - longer intervals for better performance
+        sleep_frequency = max(1, int(50 / (speed * 1000))) if speed > 0 else 50
 
         while pq:
+            # Check if we should stop completely
+            if should_stop():
+                return False
+                
+            # Handle pause state
+            while should_pause() and not should_stop():
+                time.sleep(0.1)  # Small delay to prevent busy waiting
+                
+            # Check again after potential pause
+            if should_stop():
+                return False
+
             _, _, current_node = heapq.heappop(pq)
 
             # Skip if this node was already processed with a shorter distance
@@ -82,13 +111,11 @@ class Pathfinder:
                         if neighbor != end:
                             neighbor.make_unvisited_neighbor()
 
-            # Update visualization periodically for better performance
+            # Add sleep delay periodically for visualization
+            # REMOVED: All pygame display updates from this thread
             nodes_processed += 1
-            if window and nodes_processed % update_frequency == 0:
-                grid.draw(window)
-                pygame.display.flip()
-                if speed > 0:
-                    time.sleep(speed)
+            if nodes_processed % sleep_frequency == 0 and speed > 0:
+                time.sleep(speed)
 
         # No path found
         return False
@@ -97,9 +124,26 @@ class Pathfinder:
     def reconstruct_path(end: Node, window: Optional[pygame.Surface] = None, 
                         grid: Optional[Grid] = None, speed: float = NORMAL_SPEED) -> int:
         """
-        Reconstruct and visualize the shortest path
+        Original reconstruct and visualize the shortest path
         Returns the length of the path
         """
+        return Pathfinder.reconstruct_path_with_pause(end, window, grid, speed)
+
+    @staticmethod
+    def reconstruct_path_with_pause(end: Node, window: Optional[pygame.Surface] = None, 
+                                   grid: Optional[Grid] = None, speed: float = NORMAL_SPEED,
+                                   should_pause: Optional[Callable[[], bool]] = None,
+                                   should_stop: Optional[Callable[[], bool]] = None) -> int:
+        """
+        Reconstruct and visualize the shortest path with pause support
+        Returns the length of the path
+        """
+        # Default pause and stop functions
+        if should_pause is None:
+            should_pause = lambda: False
+        if should_stop is None:
+            should_stop = lambda: False
+
         path_length = 0
         current = end
         path_nodes = []
@@ -113,11 +157,23 @@ class Pathfinder:
 
         # Animate path reconstruction in reverse order (from start to end)
         for node in reversed(path_nodes):
+            # Check if we should stop completely
+            if should_stop():
+                return path_length
+                
+            # Handle pause state
+            while should_pause() and not should_stop():
+                time.sleep(0.1)  # Small delay to prevent busy waiting
+                
+            # Check again after potential pause
+            if should_stop():
+                return path_length
+
             node.make_path()
-            if window and grid:
-                grid.draw(window)
-                pygame.display.flip()
-                if speed > 0:
-                    time.sleep(speed * 2)  # Slightly slower for path visualization
+            
+            # REMOVED: All pygame display updates from this thread
+            # Just add a delay for timing
+            if speed > 0:
+                time.sleep(speed * 2)  # Slightly slower for path visualization
 
         return path_length
