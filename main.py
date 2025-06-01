@@ -417,10 +417,9 @@ class PathfindingVisualizer:
 
             # Run Dijkstra's algorithm with pause support
             path_found = Pathfinder.dijkstra_with_pause(
-                self.grid, 
-                self.grid.start_node, 
+                self.grid,
+                self.grid.start_node,
                 self.grid.end_node,
-                None,  # Don't pass window to avoid threading conflicts
                 self.speed,
                 self._should_pause,
                 self._should_stop
@@ -433,9 +432,7 @@ class PathfindingVisualizer:
             if path_found:
                 # Reconstruct and visualize the path
                 self.last_path_length = Pathfinder.reconstruct_path_with_pause(
-                    self.grid.end_node, 
-                    None,  # Don't pass window to avoid threading conflicts
-                    None,  # Don't pass grid to avoid threading conflicts
+                    self.grid.end_node,
                     self.speed,
                     self._should_pause,
                     self._should_stop

@@ -9,16 +9,16 @@ from constants import *
 class Pathfinder:
     @staticmethod
     def dijkstra(grid: Grid, start: Optional[Node], end: Optional[Node], 
-                window: Optional[pygame.Surface] = None, speed: float = NORMAL_SPEED) -> bool:
+                speed: float = NORMAL_SPEED) -> bool:
         """
         Original Dijkstra's shortest path algorithm with visualization
         Returns True if path is found, False otherwise
         """
-        return Pathfinder.dijkstra_with_pause(grid, start, end, window, speed)
+        return Pathfinder.dijkstra_with_pause(grid, start, end, speed)
 
     @staticmethod
     def dijkstra_with_pause(grid: Grid, start: Optional[Node], end: Optional[Node], 
-                           window: Optional[pygame.Surface] = None, speed: float = NORMAL_SPEED,
+                           speed: float = NORMAL_SPEED,
                            should_pause: Optional[Callable[[], bool]] = None,
                            should_stop: Optional[Callable[[], bool]] = None) -> bool:
         """
@@ -121,17 +121,15 @@ class Pathfinder:
         return False
 
     @staticmethod
-    def reconstruct_path(end: Node, window: Optional[pygame.Surface] = None, 
-                        grid: Optional[Grid] = None, speed: float = NORMAL_SPEED) -> int:
+    def reconstruct_path(end: Node, speed: float = NORMAL_SPEED) -> int:
         """
         Original reconstruct and visualize the shortest path
         Returns the length of the path
         """
-        return Pathfinder.reconstruct_path_with_pause(end, window, grid, speed)
+        return Pathfinder.reconstruct_path_with_pause(end, speed)
 
     @staticmethod
-    def reconstruct_path_with_pause(end: Node, window: Optional[pygame.Surface] = None, 
-                                   grid: Optional[Grid] = None, speed: float = NORMAL_SPEED,
+    def reconstruct_path_with_pause(end: Node, speed: float = NORMAL_SPEED,
                                    should_pause: Optional[Callable[[], bool]] = None,
                                    should_stop: Optional[Callable[[], bool]] = None) -> int:
         """
