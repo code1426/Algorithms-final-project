@@ -1,7 +1,7 @@
 import pygame
 import sys
 from grid import Grid
-from maze_generator import MazeGenerator
+from wall_generator import WallGenerator
 from pathfinder import Pathfinder
 from constants import *
 
@@ -13,7 +13,7 @@ class PathfindingVisualizer:
         self.clock = pygame.time.Clock()
         self.grid = Grid()
         self.state = "WAITING_START"  # States: WAITING_START, WAITING_END, READY, PATHFINDING
-        self.maze_type = "recursive_backtracker"
+        self.wall_type = "maze"
         self.speed = 0.01  # Normal speed
         self.drawing_walls = False
         self.erasing_walls = False
@@ -60,27 +60,27 @@ class PathfindingVisualizer:
         self.button_positions = {}
         button_x = GRID_COLS * CELL_SIZE + BUTTON_MARGIN
 
-        # Generate Maze button
-        maze_button = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
-        self.button_positions['generate_maze'] = maze_button
-        pygame.draw.rect(self.window, GRAY, maze_button)
-        pygame.draw.rect(self.window, BLACK, maze_button, 2)
-        maze_text = self.font.render("Generate Maze", True, WHITE)
-        text_rect = maze_text.get_rect(center=maze_button.center)
-        self.window.blit(maze_text, text_rect)
+        # Generate wall button
+        wall_button = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.button_positions['generate_wall'] = wall_button
+        pygame.draw.rect(self.window, GRAY, wall_button)
+        pygame.draw.rect(self.window, BLACK, wall_button, 2)
+        wall_text = self.font.render("Generate Walls", True, WHITE)
+        text_rect = wall_text.get_rect(center=wall_button.center)
+        self.window.blit(wall_text, text_rect)
         y_offset += BUTTON_HEIGHT + BUTTON_MARGIN
 
-        # Maze type selection
-        maze_types = ["Recursive", "Prim's", "Random"]
-        maze_type_keys = ['recursive_backtracker', 'prims', 'random']
-        self.button_positions['maze_types'] = []
-        for i, mtype in enumerate(maze_types):
-            color = BLUE if self.maze_type == maze_type_keys[i] else GRAY
+        # Wall type selection
+        wall_types = ["Maze", "Random"]
+        wall_type_keys = ['maze', 'random']
+        self.button_positions['wall_types'] = []
+        for i, wtype in enumerate(wall_types):
+            color = BLUE if self.wall_type == wall_type_keys[i] else GRAY
             type_button = pygame.Rect(button_x + i * 55, y_offset, 50, 30)
-            self.button_positions['maze_types'].append((type_button, maze_type_keys[i]))
+            self.button_positions['wall_types'].append((type_button, wall_type_keys[i]))
             pygame.draw.rect(self.window, color, type_button)
             pygame.draw.rect(self.window, BLACK, type_button, 1)
-            type_text = pygame.font.SysFont('arial', 12).render(mtype, True, WHITE)
+            type_text = pygame.font.SysFont('arial', 12).render(wtype, True, WHITE)
             text_rect = type_text.get_rect(center=type_button.center)
             self.window.blit(type_text, text_rect)
         y_offset += 40
@@ -101,7 +101,7 @@ class PathfindingVisualizer:
         self.window.blit(speed_text, (button_x, y_offset))
         y_offset += 25
 
-        speeds = [("Fast", 0.001), ("Normal", 0.01), ("Slow", 0.05)]
+        speeds = [("Fast", FAST_SPEED), ("Normal", NORMAL_SPEED), ("Slow", SLOW_SPEED)]
         self.button_positions['speeds'] = []
         for i, (name, spd) in enumerate(speeds):
             color = BLUE if abs(self.speed - spd) < 0.001 else GRAY
@@ -158,19 +158,19 @@ class PathfindingVisualizer:
 
         # Check UI button clicks using stored positions
         if x >= GRID_COLS * CELL_SIZE and hasattr(self, 'button_positions'):
-            # Generate Maze button
-            if self.button_positions['generate_maze'].collidepoint(x, y):
-                MazeGenerator.generate_maze(self.grid, self.maze_type)
+            # Generate Wall button
+            if self.button_positions['generate_wall'].collidepoint(x, y):
+                WallGenerator.generate_wall(self.grid, self.wall_type)
                 self.grid.start_node = None
                 self.grid.end_node = None
                 self.state = "WAITING_START"
                 self.last_path_length = 0
                 return
 
-            # Maze type buttons
-            for type_button, maze_key in self.button_positions['maze_types']:
+            # Wall type buttons
+            for type_button, wall_key in self.button_positions['wall_types']:
                 if type_button.collidepoint(x, y):
-                    self.maze_type = maze_key
+                    self.wall_type = wall_key
                     return
 
             # Find Path button

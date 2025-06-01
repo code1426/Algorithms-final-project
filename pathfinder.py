@@ -39,7 +39,7 @@ class Pathfinder:
         update_frequency = max(1, int(1 / (speed * 100))) if speed > 0 else 1
 
         while pq:
-            current_distance, _, current_node = heapq.heappop(pq)
+            _, _, current_node = heapq.heappop(pq)
 
             # Skip if this node was already processed with a shorter distance
             if current_node not in unvisited_set:

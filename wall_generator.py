@@ -1,10 +1,9 @@
-from typing import List, Tuple
 import random
 from grid import Grid
 
-class MazeGenerator:
+class WallGenerator:
     @staticmethod
-    def generate_maze(grid: Grid, maze_type: str = 'recursive_backtracker') -> None:
+    def generate_wall(grid: Grid, maze_type: str = 'maze') -> None:
         """Generate different types of mazes"""
         # Reset the entire grid to walls first
         for row in grid.grid:
@@ -12,17 +11,13 @@ class MazeGenerator:
                 node.reset()
                 node.make_wall()
 
-        if maze_type == 'recursive_backtracker':
-            MazeGenerator._recursive_backtracker(grid)
-        elif maze_type == 'prims':
-            MazeGenerator._prims_algorithm(grid)
-        elif maze_type == 'random':
-            MazeGenerator._random_maze(grid)
-        else:
-            MazeGenerator._recursive_backtracker(grid)
+        if maze_type == 'maze':
+            WallGenerator._recursive_backtracker(grid)
+            WallGenerator._add_openings(grid) # Add some additional openings for more interesting paths
 
-        # Add some additional openings for more interesting paths
-        MazeGenerator._add_openings(grid)
+        elif maze_type == 'random':
+            WallGenerator._random_maze(grid)
+
 
     @staticmethod
     def _recursive_backtracker(grid: Grid) -> None:
@@ -81,56 +76,6 @@ class MazeGenerator:
                 stack.pop()
 
     @staticmethod
-    def _prims_algorithm(grid: Grid) -> None:
-        """Generate maze using Prim's algorithm"""
-        walls = []
-        
-        # Start from a random odd position
-        start_row = random.randrange(1, len(grid.grid) - 1, 2)
-        start_col = random.randrange(1, len(grid.grid[0]) - 1, 2)
-        
-        # Mark starting cell as passage
-        grid.get_node(start_row, start_col).reset()
-        
-        # Add walls of starting cell to the wall list
-        for dx, dy in [(0, 2), (2, 0), (0, -2), (-2, 0)]:
-            wall_row = start_row + dx // 2
-            wall_col = start_col + dy // 2
-            cell_row = start_row + dx
-            cell_col = start_col + dy
-            
-            if (1 <= cell_row < len(grid.grid) - 1 and 
-                1 <= cell_col < len(grid.grid[0]) - 1):
-                walls.append((wall_row, wall_col, cell_row, cell_col))
-
-        while walls:
-            # Pick a random wall
-            wall_row, wall_col, cell_row, cell_col = random.choice(walls)
-            walls.remove((wall_row, wall_col, cell_row, cell_col))
-
-            # If the cell is still a wall, make it a passage
-            cell_node = grid.get_node(cell_row, cell_col)
-            if cell_node and cell_node.is_wall:
-                # Make wall and cell passages
-                grid.get_node(wall_row, wall_col).reset()
-                cell_node.reset()
-
-                # Add new walls from this cell
-                for dx, dy in [(0, 2), (2, 0), (0, -2), (-2, 0)]:
-                    new_wall_row = cell_row + dx // 2
-                    new_wall_col = cell_col + dy // 2
-                    new_cell_row = cell_row + dx
-                    new_cell_col = cell_col + dy
-                    
-                    if (1 <= new_cell_row < len(grid.grid) - 1 and 
-                        1 <= new_cell_col < len(grid.grid[0]) - 1):
-                        new_cell_node = grid.get_node(new_cell_row, new_cell_col)
-                        if new_cell_node and new_cell_node.is_wall:
-                            wall_tuple = (new_wall_row, new_wall_col, new_cell_row, new_cell_col)
-                            if wall_tuple not in walls:
-                                walls.append(wall_tuple)
-
-    @staticmethod
     def _random_maze(grid: Grid) -> None:
         """Generate a random maze with 30% walls"""
         for row in range(len(grid.grid)):
@@ -143,7 +88,7 @@ class MazeGenerator:
     @staticmethod
     def _add_openings(grid: Grid) -> None:
         """Add random openings to make the maze more solvable"""
-        num_openings = max(10, len(grid.grid) // 8)
+        num_openings = max(20, len(grid.grid)) * len(grid.grid[0]) // 4
         
         for _ in range(num_openings):
             row = random.randrange(1, len(grid.grid) - 1)

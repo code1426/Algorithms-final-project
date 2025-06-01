@@ -1,5 +1,5 @@
 from typing import List, Optional, Tuple
-from constants import CELL_SIZE
+from constants import *
 
 class Node:
     def __init__(self, row: int, col: int):
@@ -7,7 +7,7 @@ class Node:
         self.col: int = col
         self.x: int = col * CELL_SIZE
         self.y: int = row * CELL_SIZE
-        self.color: Tuple[int, int, int] = (255, 255, 255)  # White by default
+        self.color: Tuple[int, int, int] = WHITE
         self.neighbors: List['Node'] = []
         self.is_wall: bool = False
 
@@ -21,28 +21,25 @@ class Node:
 
     def make_wall(self) -> None:
         self.is_wall = True
-        self.color = (0, 0, 0)  # Black
+        self.color = BLACK
 
     def make_path(self) -> None:
-        self.color = (255, 255, 0)  # Yellow
+        self.color = YELLOW
 
     def make_start(self) -> None:
-        self.color = (255, 0, 0)  # Red
+        self.color = RED
 
     def make_end(self) -> None:
-        self.color = (0, 255, 0)  # Green
+        self.color = GREEN
 
     def make_visited(self) -> None:
-        self.color = (0, 0, 255)  # Blue
-
-    def make_current(self) -> None:
-        self.color = (128, 0, 128)  # Purple
+        self.color = BLUE
 
     def make_unvisited_neighbor(self) -> None:
-        self.color = (0, 255, 255)  # Cyan - for neighbors being considered
+        self.color = CYAN
 
     def reset(self) -> None:
-        self.color = (255, 255, 255)  # White
+        self.color = WHITE
         self.is_wall = False
         self.distance = float('inf')
         self.previous = None
