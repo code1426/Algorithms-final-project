@@ -19,28 +19,9 @@ class Pathfinder:
     reconstruct the path, with built-in support for pausing and stopping
     the visualization, which is crucial for a responsive user interface.
     """
+
     @staticmethod
     def dijkstra(grid: Grid, start: Optional[Node], end: Optional[Node],
-                speed: float = NORMAL_SPEED) -> bool:
-        """
-        A simplified wrapper for `dijkstra_with_pause`. This method can be used
-        when pause/stop functionality is not required, providing a cleaner
-        interface for basic pathfinding.
-
-        Args:
-            `grid` (Grid): The `Grid` object containing the nodes.
-            `start` (Optional[Node]): The starting `Node` for the algorithm.
-            `end` (Optional[Node]): The target (ending) `Node` for the algorithm.
-            `speed` (float, optional): The animation speed (delay in seconds between steps).
-                                     Defaults to `NORMAL_SPEED` from `constants.py`.
-
-        Returns:
-            `bool`: `True` if a path is found from `start` to `end`, `False` otherwise.
-        """
-        return Pathfinder.dijkstra_with_pause(grid, start, end, speed)
-
-    @staticmethod
-    def dijkstra_with_pause(grid: Grid, start: Optional[Node], end: Optional[Node],
                            speed: float = NORMAL_SPEED,
                            should_pause: Optional[Callable[[], bool]] = None,
                            should_stop: Optional[Callable[[], bool]] = None) -> bool:
@@ -49,10 +30,6 @@ class Pathfinder:
         The algorithm explores nodes in order of increasing distance from the start node,
         updating their distances and `previous` pointers. Node colors are updated
         to provide a visual representation of the search process.
-
-        This version includes optional callback functions (`should_pause` and `should_stop`)
-        to allow the algorithm to be paused or completely terminated from an external source
-        (e.g., the main UI thread), ensuring responsiveness.
 
         Args:
             `grid` (Grid): The `Grid` object representing the search space.
@@ -91,6 +68,9 @@ class Pathfinder:
                 if not node.is_wall and node != start and node != end:
                     node.reset()
 
+        # sets the neighbors for each node in the grid before the algorithm starts
+        grid.set_neighbors()
+
         # Initialize the distance of the start node to 0. All other nodes remain infinity.
         start.distance = 0
 
@@ -106,7 +86,6 @@ class Pathfinder:
         # Adjust sleep frequency based on `speed`. For faster speeds, sleep less often
         # to maintain a smoother animation without too many small, unnoticeable delays.
         sleep_frequency = max(1, int(50 / (speed * 1000))) if speed > 0 else 50
-
 
         while pq:
             # --- External Control Checks ---
@@ -146,10 +125,6 @@ class Pathfinder:
             if current_node != start:
                 current_node.make_visited()
 
-            # Update neighbors for the current node. This step ensures that
-            # only valid, non-wall neighbors are considered for path extension.
-            grid.update_neighbors()
-
             # Iterate through all valid neighbors of the `current_node`.
             for neighbor in current_node.neighbors:
                 if neighbor.visited:
@@ -186,23 +161,7 @@ class Pathfinder:
         return False
 
     @staticmethod
-    def reconstruct_path(end: Node, speed: float = NORMAL_SPEED) -> int:
-        """
-        A simplified wrapper for `reconstruct_path_with_pause`.
-        This method can be used when pause/stop functionality is not required.
-
-        Args:
-            `end` (Node): The `Node` object representing the end of the path.
-            `speed` (float, optional): The animation speed for path visualization.
-                                     Defaults to `NORMAL_SPEED`.
-
-        Returns:
-            `int`: The length of the reconstructed path (number of steps).
-        """
-        return Pathfinder.reconstruct_path_with_pause(end, speed)
-
-    @staticmethod
-    def reconstruct_path_with_pause(end: Node, speed: float = NORMAL_SPEED,
+    def reconstruct_path(end: Node, speed: float = NORMAL_SPEED,
                                    should_pause: Optional[Callable[[], bool]] = None,
                                    should_stop: Optional[Callable[[], bool]] = None) -> int:
         """

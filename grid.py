@@ -59,7 +59,7 @@ class Grid:
             return self.grid[row][col]
         return None
 
-    def update_neighbors(self) -> None:
+    def set_neighbors(self) -> None:
         """
         Updates the list of valid neighbors for all nodes in the grid.
         A node's neighbors are defined as the directly adjacent (up, down, left, right)

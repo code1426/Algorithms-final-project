@@ -150,15 +150,15 @@ class PathfindingVisualizer:
         button_x = GRID_COLS * CELL_SIZE + BUTTON_MARGIN # X-coordinate for button alignment.
 
         # --- "Generate Walls" Button ---
-        wall_enabled = self.can_interact_with_grid() # Button is enabled if grid interaction is allowed.
-        wall_color = BUTTON_NORMAL if wall_enabled else BUTTON_DISABLED # Color changes based on enabled state.
-        wall_button_rect = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
-        self.button_positions['generate_wall'] = (wall_button_rect, wall_enabled) # Store rect and state.
-        pygame.draw.rect(self.window, wall_color, wall_button_rect) # Draw button background.
-        pygame.draw.rect(self.window, ACCENT if wall_enabled else BG_DARK, wall_button_rect, 2) # Draw button border.
-        wall_text = self.font.render("Generate Walls", True, TEXT_PRIMARY if wall_enabled else TEXT_SECONDARY)
-        text_rect = wall_text.get_rect(center=wall_button_rect.center) # Center text on button.
-        self.window.blit(wall_text, text_rect)
+        generate_wall_enabled = self.can_interact_with_grid() # Button is enabled if grid interaction is allowed.
+        generate_wall_color = BUTTON_NORMAL if generate_wall_enabled else BUTTON_DISABLED # Color changes based on enabled state.
+        generate_wall_button_rect = pygame.Rect(button_x, y_offset, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.button_positions['generate_wall'] = (generate_wall_button_rect, generate_wall_enabled) # Store rect and state.
+        pygame.draw.rect(self.window, generate_wall_color, generate_wall_button_rect) # Draw button background.
+        pygame.draw.rect(self.window, ACCENT if generate_wall_enabled else BG_DARK, generate_wall_button_rect, 2) # Draw button border.
+        generate_wall_text = self.font.render("Generate Walls", True, TEXT_PRIMARY if generate_wall_enabled else TEXT_SECONDARY)
+        text_rect = generate_wall_text.get_rect(center=generate_wall_button_rect.center) # Center text on button.
+        self.window.blit(generate_wall_text, text_rect)
         y_offset += BUTTON_HEIGHT + BUTTON_MARGIN # Update offset for next button.
 
         # --- Wall Type Selection (Maze / Random) Buttons ---
@@ -167,18 +167,18 @@ class PathfindingVisualizer:
         self.button_positions['wall_types'] = []
         for i, wtype_name in enumerate(wall_types):
             # Highlight the currently selected wall type.
-            if wall_enabled and self.wall_type == wall_type_keys[i]:
+            if generate_wall_enabled and self.wall_type == wall_type_keys[i]:
                 color = BUTTON_ACTIVE
-            elif wall_enabled:
+            elif generate_wall_enabled:
                 color = BUTTON_NORMAL
             else:
                 color = BUTTON_DISABLED
 
             type_button_rect = pygame.Rect(button_x + i * 55, y_offset, 50, 30) # Small buttons.
-            self.button_positions['wall_types'].append((type_button_rect, wall_type_keys[i], wall_enabled))
+            self.button_positions['wall_types'].append((type_button_rect, wall_type_keys[i], generate_wall_enabled))
             pygame.draw.rect(self.window, color, type_button_rect)
             pygame.draw.rect(self.window, BG_DARK, type_button_rect, 1)
-            text_color = TEXT_PRIMARY if wall_enabled else TEXT_SECONDARY
+            text_color = TEXT_PRIMARY if generate_wall_enabled else TEXT_SECONDARY
             type_text = pygame.font.SysFont('arial', 12).render(wtype_name, True, text_color)
             text_rect = type_text.get_rect(center=type_button_rect.center)
             self.window.blit(type_text, text_rect)
@@ -217,11 +217,11 @@ class PathfindingVisualizer:
         y_offset += BUTTON_HEIGHT + BUTTON_MARGIN
 
         # --- Speed Control Buttons ---
-        speed_text_surface = self.font.render("Animation Speed:", True, TEXT_PRIMARY)
+        speed_text_surface = self.font.render("Pathfinding Speed:", True, TEXT_PRIMARY)
         self.window.blit(speed_text_surface, (button_x, y_offset))
         y_offset += 25
 
-        speeds = [("Fast", FAST_SPEED), ("Normal", NORMAL_SPEED), ("Slow", SLOW_SPEED)]
+        speeds = [("Normal", NORMAL_SPEED), ("Fast", FAST_SPEED), ("Instant", INSTANT_SPEED)]
         self.button_positions['speeds'] = []
         speed_enabled = not self.is_pathfinding_in_progress() # Speed can only be changed when not pathfinding.
         for i, (name, spd) in enumerate(speeds):
@@ -528,7 +528,7 @@ class PathfindingVisualizer:
                 return
 
             # Call Dijkstra's algorithm, passing callback functions for pause and stop control.
-            path_found = Pathfinder.dijkstra_with_pause(
+            path_found = Pathfinder.dijkstra(
                 self.grid,
                 self.grid.start_node,
                 self.grid.end_node,
@@ -543,7 +543,7 @@ class PathfindingVisualizer:
 
             if path_found:
                 # If a path was found, reconstruct and visualize it.
-                self.last_path_length = Pathfinder.reconstruct_path_with_pause(
+                self.last_path_length = Pathfinder.reconstruct_path(
                     self.grid.end_node,
                     self.speed,
                     self._should_pause, # Pause/stop checks apply to path reconstruction too.
