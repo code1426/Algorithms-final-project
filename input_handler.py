@@ -1,40 +1,15 @@
-"""
-Input Handler manages all user input including mouse clicks, drags, and keyboard events.
-This separates input handling logic from the main application for better organization.
-"""
-
 import pygame
 from typing import Tuple, Optional, Callable
 from grid import Grid
 from constants import *
 
 class InputHandler:
-    """
-    Handles all user input events including mouse clicks, mouse dragging,
-    and keyboard events. Provides clean separation between input detection
-    and application logic.
-    """
-    
     def __init__(self):
-        """Initialize input handler state."""
         self.drawing_walls = False
         self.erasing_walls = False
     
     def handle_grid_click(self, pos: Tuple[int, int], button: int, grid: Grid,
                          app_state: dict, can_interact_callback: Callable[[], bool]) -> dict:
-        """
-        Handle mouse clicks on the grid area.
-        
-        Args:
-            pos: Mouse click position (x, y)
-            button: Mouse button (1=left, 3=right)
-            grid: Grid instance
-            app_state: Current application state
-            can_interact_callback: Function to check if grid interaction is allowed
-            
-        Returns:
-            Updated application state dictionary
-        """
         if not can_interact_callback():
             return app_state
             
@@ -56,7 +31,6 @@ class InputHandler:
         return new_state
     
     def _handle_left_click(self, node, grid: Grid, app_state: dict) -> dict:
-        """Handle left click for setting start/end points."""
         if node.is_wall:
             return app_state
             
@@ -80,7 +54,6 @@ class InputHandler:
         return new_state
     
     def _handle_right_click(self, node, grid: Grid, app_state: dict) -> dict:
-        """Handle right click for toggling walls."""
         if node == grid.start_node or node == grid.end_node:
             return app_state
             
@@ -95,14 +68,7 @@ class InputHandler:
     
     def handle_mouse_drag(self, pos: Tuple[int, int], grid: Grid,
                          can_interact_callback: Callable[[], bool]) -> None:
-        """
-        Handle mouse dragging for continuous wall drawing/erasing.
-        
-        Args:
-            pos: Current mouse position
-            grid: Grid instance
-            can_interact_callback: Function to check if interaction is allowed
-        """
+
         if not can_interact_callback():
             return
             
@@ -120,21 +86,11 @@ class InputHandler:
             node.reset()
     
     def handle_mouse_button_up(self) -> None:
-        """Reset drag flags when mouse button is released."""
         self.drawing_walls = False
         self.erasing_walls = False
     
     def handle_keyboard_input(self, event: pygame.event.Event, app_state: dict) -> Optional[str]:
-        """
-        Handle keyboard input events.
-        
-        Args:
-            event: Pygame keyboard event
-            app_state: Current application state
-            
-        Returns:
-            Action string or None
-        """
+
         if event.key == pygame.K_SPACE:
             # Space: Find Path / Pause / Resume
             if app_state['is_pathfinding_in_progress']:

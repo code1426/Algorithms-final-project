@@ -1,14 +1,7 @@
-"""
-This file defines global constants used throughout the pathfinding visualizer application.
-It centralizes configuration settings like window dimensions, grid cell size,
-color palette, button sizes, and animation speeds, making them easy to
-manage and adjust.
-"""
-
 # Window settings
 WINDOW_WIDTH = 1440
 WINDOW_HEIGHT = 720
-CELL_SIZE = 12  # Slightly larger for better visibility
+CELL_SIZE = 12
 
 # Calculate grid dimensions after CELL_SIZE is defined
 GRID_ROWS = WINDOW_HEIGHT // CELL_SIZE

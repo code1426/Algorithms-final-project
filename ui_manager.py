@@ -1,33 +1,15 @@
-"""
-UI Manager handles all user interface rendering and button management.
-This separates the UI logic from the main application logic for better maintainability.
-"""
-
 import pygame
 from typing import Dict, Tuple, Any
 from constants import *
 
 class UIManager:
-    """
-    Manages the user interface elements including buttons, status displays,
-    and instruction text. Provides methods for drawing the UI and detecting
-    button clicks.
-    """
     
     def __init__(self):
-        """Initialize fonts and UI state."""
         self.font = pygame.font.SysFont('arial', 16)
         self.title_font = pygame.font.SysFont('arial', 20, bold=True)
         self.button_positions: Dict[str, Any] = {}
         
     def draw_ui(self, window: pygame.Surface, app_state: Dict[str, Any]) -> None:
-        """
-        Draw the complete user interface panel.
-        
-        Args:
-            window: Pygame surface to draw on
-            app_state: Dictionary containing current application state
-        """
         # Define UI panel area
         ui_panel = pygame.Rect(GRID_COLS * CELL_SIZE, 0,
                               WINDOW_WIDTH - GRID_COLS * CELL_SIZE, WINDOW_HEIGHT)
@@ -52,13 +34,11 @@ class UIManager:
         self._draw_status_info(window, button_x, y_offset, app_state)
     
     def _draw_title(self, window: pygame.Surface, y_offset: int) -> int:
-        """Draw the application title."""
         title = self.title_font.render("Dijkstra's Algorithm", True, TEXT_PRIMARY)
         window.blit(title, (GRID_COLS * CELL_SIZE + 20, y_offset))
         return y_offset + 40
     
     def _draw_instructions(self, window: pygame.Surface, y_offset: int) -> int:
-        """Draw instruction text."""
         instructions = [
             "1. Click to set START point",
             "2. Click to set END point", 
@@ -82,7 +62,7 @@ class UIManager:
     
     def _draw_wall_generation_controls(self, window: pygame.Surface, button_x: int, 
                                      y_offset: int, app_state: Dict[str, Any]) -> int:
-        """Draw wall generation controls."""
+
         can_interact = app_state['can_interact_with_grid']
         wall_type = app_state['wall_type']
         
@@ -131,7 +111,7 @@ class UIManager:
     
     def _draw_pathfinding_controls(self, window: pygame.Surface, button_x: int,
                                  y_offset: int, app_state: Dict[str, Any]) -> int:
-        """Draw pathfinding control button."""
+
         is_pathfinding = app_state['is_pathfinding_in_progress']
         is_paused = app_state['pathfinding_paused']
         can_start = app_state['can_start_pathfinding']
@@ -169,7 +149,7 @@ class UIManager:
     
     def _draw_speed_controls(self, window: pygame.Surface, button_x: int,
                            y_offset: int, app_state: Dict[str, Any]) -> int:
-        """Draw speed control buttons."""
+
         current_speed = app_state['speed']
         is_pathfinding = app_state['is_pathfinding_in_progress']
         
@@ -204,7 +184,7 @@ class UIManager:
     
     def _draw_clear_controls(self, window: pygame.Surface, button_x: int,
                            y_offset: int, app_state: Dict[str, Any]) -> int:
-        """Draw clear control buttons."""
+
         clear_enabled = app_state['can_interact_with_grid']
         
         # Clear Path button
@@ -239,7 +219,7 @@ class UIManager:
     
     def _draw_status_info(self, window: pygame.Surface, button_x: int,
                          y_offset: int, app_state: Dict[str, Any]) -> None:
-        """Draw status information and path length."""
+
         last_path_length = app_state['last_path_length']
         current_state = app_state['state']
         is_pathfinding = app_state['is_pathfinding_in_progress']
@@ -269,15 +249,6 @@ class UIManager:
         window.blit(status_text, (button_x, y_offset))
     
     def handle_ui_click(self, pos: Tuple[int, int]) -> Tuple[str, Any]:
-        """
-        Handle clicks on UI elements.
-        
-        Args:
-            pos: Mouse click position (x, y)
-            
-        Returns:
-            Tuple of (action_type, action_data) or (None, None) if no UI element clicked
-        """
         x, y = pos
         
         # Only handle clicks in UI area

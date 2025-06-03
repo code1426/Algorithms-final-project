@@ -1,12 +1,3 @@
-"""
-This is the main application file for the Dijkstra's Algorithm Visualizer.
-It initializes Pygame, sets up the main window, manages the application's
-state, draws the user interface, handles all user input (mouse and keyboard),
-and orchestrates the interaction between the `Grid`, `Pathfinder`, and
-`WallGenerator` components. It now utilizes refactored modules for UI,
-Pathfinding Management, and Input Handling.
-"""
-
 import pygame
 import sys
 from grid import Grid
@@ -14,26 +5,12 @@ from wall_generator import WallGenerator
 from constants import *
 from typing import Dict, Any
 
-# Import refactored modules
 from ui_manager import UIManager
 from pathfinding_manager import PathfindingManager
 from input_handler import InputHandler
 
 class PathfindingVisualizer:
-    """
-    The main class for the Pathfinding Visualizer application.
-    It encapsulates the entire application logic, including:
-    - Pygame initialization and window management.
-    - The main game loop and event handling.
-    - Drawing the grid and coordinating with UIManager for UI.
-    - Managing application states (e.g., setting start/end, pathfinding).
-    - Coordinating with `Grid`, `WallGenerator`, `UIManager`, `PathfindingManager`, and `InputHandler`.
-    """
     def __init__(self):
-        """
-        Initializes the Pygame environment and all components of the visualizer.
-        Sets up the display window, game clock, grid, and initial application state.
-        """
         pygame.init()
         self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Dijkstra's Algorithm Visualizer")
@@ -63,17 +40,13 @@ class PathfindingVisualizer:
         self.quit_requested = False
 
     def _update_derived_app_state(self) -> None:
-        """
-        Updates derived application states based on current manager states.
-        This method should be called before drawing or handling input that
-        depends on these derived states.
-        """
         path_mgr_state = self.pathfinding_manager.get_state()
         self.app_state.update(path_mgr_state)
 
         self.app_state['can_interact_with_grid'] = not self.pathfinding_manager.is_pathfinding_in_progress()
         self.app_state['can_start_pathfinding'] = self.pathfinding_manager.can_start_pathfinding(self.grid)
         self.app_state['last_path_length'] = self.pathfinding_manager.last_path_length
+
         # Update the main state string based on pathfinding manager's state
         if self.pathfinding_manager.is_pathfinding_in_progress():
             self.app_state['state'] = "PATHFINDING"
@@ -85,11 +58,6 @@ class PathfindingVisualizer:
             self.app_state['state'] = "WAITING_START"
 
     def generate_walls(self) -> None:
-        """
-        Initiates the wall generation process on the grid based on the
-        currently selected `wall_type`. After generation, it resets the
-        start/end nodes and path length display, preparing for a new pathfinding run.
-        """
         if not self.app_state['can_interact_with_grid']:
             return
 
@@ -100,40 +68,30 @@ class PathfindingVisualizer:
         self.pathfinding_manager.last_path_length = 0
 
     def clear_path(self) -> None:
-        """
-        Clears only the visual elements of the pathfinding visualization.
-        """
         if not self.app_state['can_interact_with_grid']:
             return
+
         self.grid.clear_path()
         self.pathfinding_manager.last_path_length = 0
 
     def clear_all(self) -> None:
-        """
-        Resets the entire grid and application state.
-        """
         if not self.app_state['can_interact_with_grid']:
             return
+
         self.grid.clear_all()
         self.grid.start_node = None
         self.grid.end_node = None
         self.app_state['state'] = "WAITING_START"
         self.pathfinding_manager.last_path_length = 0
-        self.pathfinding_manager.stop_pathfinding() # Ensure pathfinding thread is stopped
+        self.pathfinding_manager.stop_pathfinding()
 
     def handle_quit(self) -> None:
-        """
-        Manages the graceful shutdown process of the application.
-        """
         self.quit_requested = True
         self.pathfinding_manager.request_quit()
         pygame.quit()
         sys.exit()
 
     def run(self) -> None:
-        """
-        The main application loop (`game loop`).
-        """
         running = True
         try:
             while running and not self.quit_requested:
