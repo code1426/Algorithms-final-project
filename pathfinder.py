@@ -143,7 +143,7 @@ class Pathfinder:
                     # If the neighbor is not already in the priority queue (or has a worse distance), add it.
                     # This check is crucial for the efficiency of Dijkstra's with a priority queue.
                     if neighbor not in unvisited_set:
-                        unvisited_set.add(neighbor)
+                        unvisited_set.add(neighbor) 
                         heapq.heappush(pq, (new_distance, id(neighbor), neighbor)) # Add to PQ.
                         # Visualize the neighbor being considered (`CYAN`), unless it's the end node.
                         if neighbor != end:

@@ -164,7 +164,7 @@ class WallGenerator:
         """
         # Calculate a suitable number of openings based on the grid size.
         # This creates roughly `(rows * cols) / 4` openings.
-        num_openings = max(20, len(grid.grid) * len(grid.grid[0]) // 4)
+        num_openings = (len(grid.grid) ** 2) // 4
 
         for _ in range(num_openings):
             # Choose random coordinates, ensuring they are not on the very edge of the grid.

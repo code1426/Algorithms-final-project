@@ -37,9 +37,9 @@ NODE_DEFAULT = (30, 32, 40)        # Default node color
 
 # UI Elements
 BUTTON_NORMAL = (60, 64, 72)       # Normal button (darker gray)
-BUTTON_HOVER = (80, 84, 92)       # Button hover state (slightly lighter)
-BUTTON_ACTIVE = (0, 150, 255)     # Button active state (bright blue)
-BUTTON_DISABLED = (40, 42, 48)    # Disabled button (darker gray)
+BUTTON_HOVER = (80, 84, 92)        # Button hover state (slightly lighter)
+BUTTON_ACTIVE = (0, 150, 255)      # Button active state (bright blue)
+BUTTON_DISABLED = (40, 42, 48)     # Disabled button (darker gray)
 
 # Status Colors
 STATUS_SUCCESS = (76, 175, 80)     # Success/Completed
